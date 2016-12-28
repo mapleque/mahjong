@@ -56,41 +56,10 @@ type Player struct {
 	flourCards  []*Card   // 花牌
 
 	curEvent *Event
+	doEvent  *Event
 }
 
-type Event struct {
-	name EventName // 事件名称
-	rule EventRule // 事件规则
-}
-
-// 事件定义
-type EventName int
-
-const (
-	_           EventName = iota
-	EVENT_BUHUA           // 补花
-	EVENT_ZIMO            // 自摸
-	EVENT_HU              // 胡
-	EVENT_GANG            // 杠
-	EVENT_PENG            // 碰
-	EVENT_CHI             // 吃
-	EVENT_PUSH            // 出牌
-	EVENT_PULL            // 抓牌
-	EVENT_PULL2           // 抓牌
-	EVENT_PULL4           // 抓牌
-)
-
-// 事件规则定义
-type EventRule int
-
-const (
-	_                EventRule = iota
-	EVENT_RULE_SELF            //自己
-	EVENT_RULE_NEXT            //下家
-	EVENT_RULE_OTHER           //其他人
-	EVENT_RULE_ALL             //所有人
-)
-
+// 创建一个游戏
 func CreateGame(maxPlayer, maxSet int) *Game {
 	game := &Game{
 		maxPlayer:   maxPlayer,
@@ -102,22 +71,7 @@ func CreateGame(maxPlayer, maxSet int) *Game {
 	return game
 }
 
-func (game *Game) autoContral() {
-	switch game.status {
-	case GAME_WAITING:
-		if len(game.playerChain) == game.maxPlayer && game.allReady() {
-			game.createSet()
-			return
-		}
-		break
-	case GAME_GAMING:
-		game.curSet.autoContral()
-		break
-	default:
-		break
-	}
-}
-
+// 用户加入一个游戏
 func (game *Game) Join(playerId int) {
 	player := &Player{
 		id:      playerId,
@@ -125,9 +79,38 @@ func (game *Game) Join(playerId int) {
 	game.playerChain[playerId] = player
 }
 
+// 用户退出一个游戏
+func (game *Game) Out(playerId int) {
+	if _, ok := playerChain[playerId]; ok {
+		delete(playerChain, playerId)
+	}
+}
+
+// 用户准备开始游戏
+// 有这一步是给用户反悔时间，如果用户看有不喜欢的人，就可以不开始并退出
 func (game *Game) Ready(playerId int) {
 	game.playerChain[playerId].prepare = true
-	game.autoContral()
+	game.process()
+}
+
+func (game *Game) process() {
+	switch game.status {
+	case GAME_WAITING:
+		// 如果是等待状态，要先看人齐不齐，再看是不是都准备了
+		// 满足上面的条件，就创建牌局
+		// 否则继续等
+		if len(game.playerChain) == game.maxPlayer && game.allReady() {
+			game.createSet()
+			return
+		}
+		break
+	case GAME_GAMING:
+		// 如果是进行状态，说明已经有牌局了，直接执行牌局的process
+		game.curSet.process()
+		break
+	default:
+		break
+	}
 }
 
 func (game *Game) allReady() bool {
@@ -157,31 +140,32 @@ func (game *Game) createSet() *Set {
 	}
 	game.curSet = set
 	game.status = GAME_GAMING
-	game.autoContral()
+	game.process()
 	return set
 }
 
 func (game *Game) Op(playerId int, op string, index []int) {
+	// TODO op do some thing
 	game.curSet.status = SET_OP_DONE
-	game.autoContral()
+	game.process()
 }
 
-func (set *Set) autoContral() {
+func (set *Set) process() {
 	switch set.status {
 	case SET_NEED_INIT:
 		set.init()
 		break
 	case SET_WAIT_OP:
-		switch set.curEvent.name {
-		case EVENT_PULL4, EVENT_PULL2, EVENT_PULL:
-			// 系统自动代理操作
-			set.autoProcess()
-		default:
-			// wait for user op
-			return
+		set.rule.doEvent(set)
+		if set.curPlayer().doEvent != nil {
+			set.status = SET_OP_DONE
+			set.process()
 		}
 		break
 	case SET_OP_DONE:
+		set.rule.nextEvent(set)
+		set.curPlayer().doEvent = nil
+		set.status = SET_WAIT_OP
 		set.process()
 		break
 	default:
@@ -189,43 +173,13 @@ func (set *Set) autoContral() {
 	}
 }
 
-func (set *Set) autoProcess() {
-	switch set.curEvent.name {
-	case EVENT_PULL4:
-		set.rule.getCards(4, &set.cardPool, set.curPlayer())
-		break
-	case EVENT_PULL2:
-		set.rule.getCards(2, &set.cardPool, set.curPlayer())
-		break
-	case EVENT_PULL:
-		set.rule.getCards(1, &set.cardPool, set.curPlayer())
-		break
-	}
-	set.status = SET_OP_DONE
-	set.autoContral()
-}
-
 func (set *Set) init() {
 	// 初始化牌局
-	set.cardPool = *set.rule.allCards()
+	set.rule.initPool(set)
 	set.curPlayerIndex = 0
 	set.curPlayer().zhuang = true
 	set.curEvent = set.rule.getNextEvent(set.curPlayer())
 	set.status = SET_WAIT_OP
-}
-
-func (set *Set) process() {
-	// 让牌局进行
-	switch set.curEvent.name {
-	case EVENT_PULL4, EVENT_PULL2:
-		set.curPlayerIndex = (set.curPlayerIndex + 1) % set.playerTotal
-		set.curEvent = set.rule.getNextEvent(set.curPlayer())
-		break
-	case EVENT_PULL:
-		set.curEvent = set.rule.getNextEvent(set.curPlayer())
-	}
-	set.status = SET_WAIT_OP
-	set.autoContral()
 }
 
 func (set *Set) curPlayer() *Player {

@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-type CardSet *[]Card
-
 type Card struct {
 	Name  string
 	Type  CardType
@@ -67,9 +65,9 @@ func orderCards(cardsPointer *[]*Card) {
 }
 
 func swapCards(a *Card, b *Card) {
-	tmp := a
-	a = b
-	b = tmp
+	tmp := *a
+	*a = *b
+	*b = tmp
 }
 
 func randIndex(max int) int {
