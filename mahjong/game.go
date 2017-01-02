@@ -11,16 +11,36 @@ type Game struct {
 }
 
 type Set struct {
-	playerTotal         int
-	curPlayerIndex      int             // 当前操作玩家
-	curEvent            *Event          // 当前事件
-	curEventPlayerIndex int             // 当前事件操作玩家
-	curEventCard        *Card           // 当前事件的牌
-	cardPool            []*Card         // 牌池
-	players             map[int]*Player // 所有玩家
-	playerChain         map[int]*Player // 玩家链
-	status              SetStatus
-	rule                RuleImpl
+	playerTotal          int
+	curPlayerIndex       int    // 当前操作玩家
+	curEvent             *Event // 当前事件
+	curEventPlayerIndex  int    // 当前事件操作玩家
+	curEventCard         *Card  // 当前事件的牌
+	lastEvent            *Event // 上一个事件
+	lastEventPlayerIndex int    // 上一个事件操作玩家
+	lastEventCard        *Card
+	cardPool             []*Card         // 牌池
+	players              map[int]*Player // 所有玩家
+	playerChain          map[int]*Player // 玩家链
+	status               SetStatus
+	rule                 RuleImpl
+}
+
+type Player struct {
+	id      int  // 玩家id
+	prepare bool // 玩家准备状态
+	zhuang  bool
+
+	waitCard    *Card      // 当前牌
+	handCards   []*Card    // 手牌
+	upCardSet   []*CardSet // 亮着的牌
+	downCardSet []*CardSet // 扣着的牌
+	outCards    []*Card    // 出过的牌
+	flourCards  []*Card    // 花牌
+
+	curEvent *Event
+	doEvent  *Event
+	doIndex  *[]int
 }
 
 // 游戏状态
@@ -43,21 +63,15 @@ const (
 	SET_OP_DONE             // 等待系统处理
 )
 
-type Player struct {
-	id      int  // 玩家id
-	prepare bool // 玩家准备状态
-	zhuang  bool
-
-	waitCard    *Card     // 当前牌
-	handCards   []*Card   // 手牌
-	upCardSet   []CardSet // 亮着的牌
-	downCardSet []CardSet // 扣着的牌
-	outCards    []*Card   // 出过的牌
-	flourCards  []*Card   // 花牌
-
-	curEvent *Event
-	doEvent  *Event
-}
+// 事件操作符映射
+var OP_EVENT_MAP = map[string]EventName{
+	"zimo": EVENT_ZIMO,
+	"hu":   EVENT_HU,
+	"gang": EVENT_GANG,
+	"peng": EVENT_PENG,
+	"chi":  EVENT_CHI,
+	"push": EVENT_PUSH,
+	"pass": EVENT_PASS}
 
 // 创建一个游戏
 func CreateGame(maxPlayer, maxSet int) *Game {
@@ -81,8 +95,8 @@ func (game *Game) Join(playerId int) {
 
 // 用户退出一个游戏
 func (game *Game) Out(playerId int) {
-	if _, ok := playerChain[playerId]; ok {
-		delete(playerChain, playerId)
+	if _, ok := game.playerChain[playerId]; ok {
+		delete(game.playerChain, playerId)
 	}
 }
 
@@ -144,10 +158,26 @@ func (game *Game) createSet() *Set {
 	return set
 }
 
-func (game *Game) Op(playerId int, op string, index []int) {
-	// TODO op do some thing
+func (game *Game) Op(playerId int, op string, index []int) bool {
+	if game.curSet.curEventPlayer().id != playerId {
+		return false
+	}
+
+	if _, ok := OP_EVENT_MAP[op]; !ok {
+		return false
+	}
+	if OP_EVENT_MAP[op] == EVENT_PASS {
+		game.curSet.curPlayer().doEvent = &Event{EVENT_PASS}
+	} else if OP_EVENT_MAP[op] == game.curSet.curPlayer().curEvent.name {
+		game.curSet.curPlayer().doEvent = game.curSet.curEvent
+		game.curSet.curPlayer().doIndex = &index
+		game.curSet.rule.doEventManual(game.curSet)
+	} else {
+		return false
+	}
 	game.curSet.status = SET_OP_DONE
 	game.process()
+	return true
 }
 
 func (set *Set) process() {
@@ -156,7 +186,9 @@ func (set *Set) process() {
 		set.init()
 		break
 	case SET_WAIT_OP:
-		set.rule.doEvent(set)
+		// 先尝试系统自动处理事件，如果系统自动处理了，就直接进入下一个状态
+		set.curPlayer().curEvent = set.curEvent
+		set.rule.doEventAuto(set)
 		if set.curPlayer().doEvent != nil {
 			set.status = SET_OP_DONE
 			set.process()
@@ -178,10 +210,13 @@ func (set *Set) init() {
 	set.rule.initPool(set)
 	set.curPlayerIndex = 0
 	set.curPlayer().zhuang = true
-	set.curEvent = set.rule.getNextEvent(set.curPlayer())
 	set.status = SET_WAIT_OP
 }
 
 func (set *Set) curPlayer() *Player {
 	return set.playerChain[set.curPlayerIndex]
+}
+
+func (set *Set) curEventPlayer() *Player {
+	return set.playerChain[set.curEventPlayerIndex]
 }

@@ -31,9 +31,10 @@ const (
 type CardSet *[]*Card
 
 type RuleImpl interface {
-	initPool(*Set)     // 获取初始牌，乱序的
-	doEvent(*Set) bool // 如果是系统自动处理的事件，这里会把它做掉，并返回true
-	nextEvent(*Set)    // 更新下一次操作
+	initPool(*Set)           // 获取初始牌，乱序的
+	doEventManual(*Set) bool // 玩家指定操作
+	doEventAuto(*Set) bool   // 系统自动代理操作
+	nextEvent(*Set)          // 更新下一次操作
 }
 
 func getRule(rule Rule) RuleImpl {

@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -10,6 +11,10 @@ type Card struct {
 	Type  CardType
 	Index int
 	Value int
+}
+
+func (card *Card) info() string {
+	return card.Name + "(" + strconv.Itoa(card.Index) + ")"
 }
 
 type CardType int
