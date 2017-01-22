@@ -7,13 +7,23 @@ import (
 )
 
 type Card struct {
-	Name  string
-	Type  CardType
-	Index int
-	Value int
+	Name  string   `json:"name"`
+	Type  CardType `json:"type"`
+	Index int      `json:"index"`
+	Value int      `json:"value"`
+}
+type CardSet struct {
+	Cards []*Card `json:"cards"`
 }
 
-func (card *Card) info() string {
+func logCards(cards []*Card) string {
+	str := ""
+	for _, card := range cards {
+		str += " " + card.log()
+	}
+	return str
+}
+func (card *Card) log() string {
 	return card.Name + "(" + strconv.Itoa(card.Index) + ")"
 }
 
@@ -73,6 +83,24 @@ func swapCards(a *Card, b *Card) {
 	tmp := *a
 	*a = *b
 	*b = tmp
+}
+
+func removeCards(hold *[]*Card, remove []*Card) {
+	holdCards := *hold
+	newCards := []*Card{}
+	for _, holdCard := range holdCards {
+		exist := false
+		for _, removeCard := range remove {
+			if holdCard.Index == removeCard.Index {
+				exist = true
+				break
+			}
+		}
+		if !exist {
+			newCards = append(newCards, holdCard)
+		}
+	}
+	*hold = newCards
 }
 
 func randIndex(max int) int {

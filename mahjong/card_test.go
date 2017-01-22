@@ -68,6 +68,14 @@ func TestDisOrderCards(t *testing.T) {
 	}
 }
 
+func TestRemoveCards(t *testing.T) {
+	pool := createAllCards()
+	removeCards(&pool, pool)
+	if len(pool) > 0 {
+		t.Error("remove faild", logCards(pool))
+	}
+}
+
 // 测试随机方法
 func TestRandIndex(t *testing.T) {
 	if randIndex(1) != 0 {
