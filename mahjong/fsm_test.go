@@ -78,7 +78,33 @@ func Test2Player(t *testing.T) {
 		logPlayers(t, fsm)
 		if fsm.SetStatus != 2 {
 			logFsm(t, fsm)
-			break
+			return
 		}
 	}
+	t.Error("set not end")
+}
+func Test4Player(t *testing.T) {
+	fsm := CreateFSM("standard", 4)
+	fsm.Join("1")
+	fsm.Join("2")
+	fsm.Join("3")
+	fsm.Join("4")
+	logFsm(t, fsm)
+	logPlayers(t, fsm)
+	for i := 0; i < 200; i++ {
+		curPlayer := fsm.CurEvent.PlayerId
+		if fsm.CurEvent.Event != 7 {
+			t.Log("player", curPlayer, "do", 12)
+			fsm.Op(curPlayer, 12, []int{fsm.PlayerList[curPlayer].HandCards[0].Index})
+		} else {
+			t.Log("player", curPlayer, "do", 7)
+			fsm.Op(curPlayer, 7, []int{fsm.PlayerList[curPlayer].HandCards[0].Index})
+		}
+		logPlayers(t, fsm)
+		if fsm.SetStatus != 2 {
+			logFsm(t, fsm)
+			return
+		}
+	}
+	t.Error("set not end")
 }

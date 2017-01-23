@@ -75,11 +75,10 @@ login
     >username
     >password
     <token
-check-user-game-info
+info
     >token
     <gameList
     <gameInfo
-    <setInfo
 create-game
     >token
     >option
