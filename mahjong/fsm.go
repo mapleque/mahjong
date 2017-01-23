@@ -66,7 +66,7 @@ func CreateFSM(rule string, maxPlayer int) *FSM {
 		GameStatus:   GAME_STATUS_PREPARE,
 		SetStatus:    SET_STATUS_PREPARE,
 		GameRound:    0,
-		MaxGameRound: 4}
+		MaxGameRound: 15}
 	return fsm
 }
 

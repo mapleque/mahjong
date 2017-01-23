@@ -1,0 +1,14 @@
+<h1>选择加入或者新创建一盘</h1>
+<div class="center">
+    <%_.map(gameList, function(v,k){%>
+    <div class="desk">
+        <%_.map(v.playerList, function(v,k){%>
+            <div class="desk-player"><%=k%></div>
+        <%})%>
+        <input class="desk-need" type="button" name="join" value="<%=v.maxPlayer%>" data-id="<%=k%>">
+    </div>
+    <%})%>
+    <div class="desk">
+        <input class="desk-need" type="button" name="create" value="+">
+    </div>
+</div>

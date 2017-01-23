@@ -26,19 +26,22 @@ func InitRouter(server *Server) {
 		Description: "join a game",
 		Input: Checker{
 			"token": Rule("string", STATUS_INVALID_TOKEN, "user token"),
-			"fsmId": Rule("string", STATUS_INVALID_ID, "fsm id")}},
+			"data": Checker{
+				"fsmId": Rule("string", STATUS_INVALID_ID, "fsm id")}}},
 		joinFilter)
 	baseRouter.NewDocRouter(&Doc{
 		Path:        "op",
 		Description: "do something",
 		Input: Checker{
-			"token":  Rule("string", STATUS_INVALID_TOKEN, "user token"),
-			"op":     Rule("int{2,3,5,6,7,12}", STATUS_INVALID_OP, "user op"),
-			"indexs": []string{Rule("int", STATUS_INVALID_OP, "op indexs")}}},
+			"token": Rule("string", STATUS_INVALID_TOKEN, "user token"),
+			"data": Checker{
+				"op": Rule("int{2,3,5,6,7,12}", STATUS_INVALID_OP, "user op"),
+				"indexs": []string{
+					Rule("int", STATUS_INVALID_OP, "op indexs")}}}},
 		opFilter)
 	baseRouter.NewDocRouter(&Doc{
 		Path:        "next",
-		Description: "start next game",
+		Description: "start a new game",
 		Input: Checker{
 			"token": Rule("string", STATUS_INVALID_TOKEN, "user token")}},
 		nextFilter)
@@ -91,7 +94,8 @@ func createFilter(context *Context) bool {
 }
 func joinFilter(context *Context) bool {
 	playerId := getPlayerId(context)
-	fsmId := String(context.Params["fsmId"])
+	params := Map(context.Params["data"])
+	fsmId := String(params["fsmId"])
 	if _, ok := gameMap[playerId]; ok {
 		return false
 	}
@@ -105,8 +109,9 @@ func joinFilter(context *Context) bool {
 }
 func opFilter(context *Context) bool {
 	playerId := getPlayerId(context)
-	op := Int(context.Params["op"])
-	indexs := Array(context.Params["indexs"])
+	params := Map(context.Params["data"])
+	op := Int(params["op"])
+	indexs := Array(params["indexs"])
 	var opIndexs []int
 	for _, index := range indexs {
 		opIndexs = append(opIndexs, Int(index))
@@ -128,13 +133,19 @@ func nextFilter(context *Context) bool {
 	if !ok {
 		return false
 	}
-	fsm, ok := gameList[fsmId]
+	toDel := []string{}
+	for oPlayer, oFsmId := range gameMap {
+		if oFsmId == fsmId {
+			toDel = append(toDel, oPlayer)
+		}
+	}
+	_, ok = gameList[fsmId]
 	if !ok {
 		return false
 	}
-	if fsm.SetStatus != 3 {
-		return false
+	delete(gameList, fsmId)
+	for _, oPlayer := range toDel {
+		delete(gameMap, oPlayer)
 	}
-	fsm.Next()
 	return true
 }

@@ -97,9 +97,7 @@ func (rule *StandardRule) afterPush(fsm *FSM, playerId string) {
 }
 
 func (rule *StandardRule) pushFinish(fsm *FSM, playerId string) {
-	player := fsm.PlayerList[playerId]
 	fsm.DependPlayer = ""
-	player.OutCards = append(player.OutCards, fsm.WaitCard)
 	fsm.WaitCard = nil
 }
 
@@ -147,16 +145,22 @@ func (rule *StandardRule) doPush(fsm *FSM, playerId string) bool {
 	index := player.DoIndex
 	var pushCard *Card
 	// 先看是不是刚抓上来的牌
-	if player.WaitCard.Index == (*index)[0] {
+	if player.WaitCard != nil && player.WaitCard.Index == (*index)[0] {
 		// 如果是，直接换指针
 		pushCard = player.WaitCard
 	} else {
 		// 如果不是，在手牌里找
 		for i, card := range player.HandCards {
 			if card.Index == (*index)[0] {
-				swapCards(player.HandCards[i], player.WaitCard)
+				if player.WaitCard != nil {
+					swapCards(player.HandCards[i], player.WaitCard)
+					pushCard = player.WaitCard
+				} else {
+					pushCard = card
+					removeCards(&player.HandCards, []*Card{card})
+				}
 				orderCards(&player.HandCards)
-				pushCard = player.WaitCard
+				break
 			}
 		}
 	}
@@ -165,6 +169,7 @@ func (rule *StandardRule) doPush(fsm *FSM, playerId string) bool {
 	}
 	player.WaitCard = nil
 	fsm.WaitCard = pushCard
+	player.OutCards = append(player.OutCards, fsm.WaitCard)
 	fsm.EventQueue.put(&Event{playerId, EVENT_EXPAND_AFTER_PUSH})
 	return true
 }
@@ -184,10 +189,10 @@ func (rule *StandardRule) doHu(fsm *FSM, playerId string) bool {
 		}
 	}
 	fsm.WinInfo = &WinInfo{
-		fans:          fans,
-		count:         fanCount,
-		winPlayerId:   playerId,
-		losePlayerIds: losePlayerIds}
+		Fans:          fans,
+		Count:         fanCount,
+		WinPlayerId:   playerId,
+		LosePlayerIds: losePlayerIds}
 	fsm.EventQueue.clear()
 	return true
 }
@@ -218,6 +223,10 @@ func (rule *StandardRule) doGang(fsm *FSM, playerId string) bool {
 		}
 		player.UpCardSet = append(player.UpCardSet, cardSet)
 		removeCards(&player.HandCards, toRemove)
+		removeCards(
+			&fsm.PlayerList[fsm.DependPlayer].OutCards,
+			[]*Card{fsm.WaitCard})
+
 		fsm.DependPlayer = playerId
 		fsm.EventQueue.clear()
 		totalPlayer := len(fsm.PlayerChain)
@@ -234,7 +243,7 @@ func (rule *StandardRule) doGang(fsm *FSM, playerId string) bool {
 	cardSet := &CardSet{Cards: []*Card{player.WaitCard}}
 	toRemove := []*Card{}
 	for _, card := range player.HandCards {
-		if rule.isDui(card, fsm.WaitCard) {
+		if rule.isDui(card, player.WaitCard) {
 			cardSet.Cards = append(cardSet.Cards, card)
 			toRemove = append(toRemove, card)
 		}
@@ -298,6 +307,9 @@ func (rule *StandardRule) doPeng(fsm *FSM, playerId string) bool {
 	}
 	player.UpCardSet = append(player.UpCardSet, cardSet)
 	removeCards(&player.HandCards, toRemove)
+	removeCards(
+		&fsm.PlayerList[fsm.DependPlayer].OutCards,
+		[]*Card{fsm.WaitCard})
 	fsm.WaitCard = nil
 	fsm.EventQueue.clear()
 	fsm.EventQueue.put(&Event{playerId, EVENT_PUSH})
@@ -328,6 +340,9 @@ func (rule *StandardRule) doChi(fsm *FSM, playerId string) bool {
 	}
 	player.UpCardSet = append(player.UpCardSet, cardSet)
 	removeCards(&player.HandCards, toRemove)
+	removeCards(
+		&fsm.PlayerList[fsm.DependPlayer].OutCards,
+		[]*Card{fsm.WaitCard})
 	fsm.WaitCard = nil
 	fsm.EventQueue.clear()
 	fsm.EventQueue.put(&Event{playerId, EVENT_PUSH})
@@ -365,6 +380,7 @@ func (rule *StandardRule) doInitBuhua(fsm *FSM, playerId string) {
 			}
 		}
 	}
+	orderCards(&player.HandCards)
 }
 
 func (rule *StandardRule) doInitPull(fsm *FSM, playerId string, num int) {

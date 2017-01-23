@@ -1,0 +1,258 @@
+/* center view */
+
+.center {
+    width:800px;
+    height:600px;
+    position:relative;
+    text-align:center;
+    margin:auto;
+}
+.desk {
+    display:block;
+    position:relative;
+    float:left;
+    width:75px;
+    height:75px;
+    background:darkgreen;
+    margin:5px;
+}
+.desk-player {
+    display:inline-block;
+    position:absolute;
+    width:20px;
+    height:20px;
+    font-size:12px;
+    line-height:20px;
+}
+.desk-player:nth-child(1){
+    background-color:red;
+    top:0;
+    left:27.5px;
+}
+.desk-player:nth-child(2){
+    background-color:blue;
+    bottom:0;
+    left:27.5px;
+}
+.desk-player:nth-child(3){
+    background-color:yellow;
+    top:27.5px;
+    right:0;
+}
+.desk-player:nth-child(4){
+    background-color:orange;
+    top:27.5px;
+    left:0;
+}
+.desk-need {
+    display:inline-block;
+    height:35px;
+    width:35px;
+    color:white;
+    position:absolute;
+    top:20px;
+    left:20px;
+    line-height:35px;
+    background:black;
+    border:none;
+}
+
+/* playing view */
+
+.play-pannel {
+	width:800px;
+	height:600px;
+	position:relative;
+	text-align:center;
+	margin:auto;
+	background:white;
+}
+.win-pannel {
+	width:400px;
+	height:400px;
+	position:relative;
+	text-align:center;
+	margin:auto;
+	margin-top:-500px;
+	background:gray;
+	opacity:0.3;
+}
+.game-seq {
+	position:absolute;
+	width:67px;
+	left:0;
+	text-align:center;
+}
+.card-pool {
+	position:absolute;
+	width:66px;
+	left:67px;
+	text-align:center;
+}
+.set-seq {
+	position:absolute;
+	width:67px;
+	right:0;
+	text-align:center;
+}
+.game-seq i, .set-seq i, .card-pool i{
+	width:51px;
+	height:50px;
+	line-height:50px;
+	display:inline-block;
+}
+.game-seq div, .set-seq div, .card-pool div{
+	width:51px;
+	height:73px;
+	display:inline-block;
+}
+.play-banner {
+	border:1px solid rgba(0,0,0,0.25);
+	border-radius:5px;
+	position:absolute;
+	top:228px;
+	left:298px;
+	width:200px;
+	height:140px;
+}
+.player-3 {
+	height: 100px;
+	position:absolute;
+	margin:auto;
+	padding:10px;
+	top:330px;
+    right:20px;
+    transform:rotate(90deg);
+    -webkit-transform:rotate(270deg) scale(0.5);
+}
+.player-2 {
+	height: 100px;
+	position:absolute;
+	margin:auto;
+	padding:10px;
+	top:-20px;
+    right:200px;
+    transform:rotate(90deg) scale(0.5);
+    -webkit-transform:rotate(180deg) scale(0.5);
+}
+.player-1 {
+	height: 100px;
+	position:absolute;
+	margin:auto;
+	padding:10px;
+	top:-50px;
+    left:20px;
+    transform:rotate(90deg) scale(0.5);
+    -webkit-transform:rotate(90deg) scale(0.5);
+}
+.player-0 {
+	height: 100px;
+	position:absolute;
+	margin:auto;
+	padding:10px;
+	bottom:0;
+}
+.pool {
+    width:700px;
+	bottom:83px;
+	position:absolute;
+}
+.ops {
+	width:170px;
+	position:absolute;
+	left:630px;
+	bottom:93px;
+}
+.hand {
+	width:663px;
+	bottom:10px;
+	position:absolute;
+}
+.wait {
+	width:51px;
+	left:683px;
+	bottom:10px;
+	position:absolute;
+}
+.flower {
+	width:56px;
+	left:734px;
+	bottom:10px;
+	position:absolute;
+}
+.op {
+	background-color:darkorange;
+	border:none;
+	color:white;
+	height:30px;
+	width:30px;
+}
+.card {
+	background-color:darkgreen;
+	background-image:url(../img/cards.jpg);
+	background-repeat:no-repeat;
+	background-size:459px 365px;
+	background-position:0 0;
+	background-attachment:scroll;
+	border:none;
+	color:white;
+	float:left;
+	height:73px;
+	overflow:hidden;
+	width:51px;
+}
+.card_used {
+    transform:rotate(30deg) skewY(-30deg) scale(0.5);
+    -webkit-transform:rotate(30deg) skewY(-30deg) scale(0.5);
+    margin-right:-25.5px;
+}
+.pool .card {
+    transform:rotate(30deg) skewY(-30deg) scale(0.5);
+    -webkit-transform:rotate(30deg) skewY(-30deg) scale(0.5);
+    margin-right:-25.5px;
+    margin-top:-36.5px;
+}
+.card_1 {background-position:-0px -0px;}
+.card_2 {background-position:-51px -0px;}
+.card_3 {background-position:-102px -0px;}
+.card_4 {background-position:-153px -0px;}
+.card_5 {background-position:-204px -0px;}
+.card_6 {background-position:-255px -0px;}
+.card_7 {background-position:-306px -0px;}
+.card_8 {background-position:-357px -0px;}
+.card_9 {background-position:-408px -0px;}
+.card_11 {background-position:-0px -73px;}
+.card_12 {background-position:-51px -73px;}
+.card_13 {background-position:-102px -73px;}
+.card_14 {background-position:-153px -73px;}
+.card_15 {background-position:-204px -73px;}
+.card_16 {background-position:-255px -73px;}
+.card_17 {background-position:-306px -73px;}
+.card_18 {background-position:-357px -73px;}
+.card_19 {background-position:-408px -73px;}
+.card_21 {background-position:-0px -146px;}
+.card_22 {background-position:-51px -146px;}
+.card_23 {background-position:-102px -146px;}
+.card_24 {background-position:-153px -146px;}
+.card_25 {background-position:-204px -146px;}
+.card_26 {background-position:-255px -146px;}
+.card_27 {background-position:-306px -146px;}
+.card_28 {background-position:-357px -146px;}
+.card_29 {background-position:-408px -146px;}
+.card_30 {background-position:--51px -219px;}
+.card_31 {background-position:-0px -219px;}
+.card_32 {background-position:-51px -219px;}
+.card_33 {background-position:-102px -219px;}
+.card_34 {background-position:-153px -219px;}
+.card_35 {background-position:-204px -219px;}
+.card_36 {background-position:-255px -219px;}
+.card_37 {background-position:-306px -219px;}
+.card_41 {background-position:-0px -292px;}
+.card_42 {background-position:-51px -292px;}
+.card_43 {background-position:-102px -292px;}
+.card_44 {background-position:-153px -292px;}
+.card_45 {background-position:-204px -292px;}
+.card_46 {background-position:-255px -292px;}
+.card_47 {background-position:-306px -292px;}
+.card_48 {background-position:-357px -292px;}
+.card_hide {background-position:-408px -219px;}

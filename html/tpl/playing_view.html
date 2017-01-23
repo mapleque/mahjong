@@ -1,0 +1,157 @@
+<div class="play-pannel">
+	<div class="play-banner">
+		<div class="game-seq">
+			<i>圈风</i>
+			<div>
+				<input type="button" class="card card_3<%=parseInt(gameInfo.gameRound % 4)+1%>"></input>
+			</div>
+		</div>
+		<div class="card-pool">
+			<i>牌墙</i>
+			<div>
+				<input type="button" name="restart" class="card card_hide" value="剩余：<%=gameInfo.cardPool.length%>"></input>
+			</div>
+		</div>
+		<div class="set-seq">
+			<i>门风</i>
+			<div>
+				<input type="button" class="card card_3<%=parseInt(gameInfo.gameRound / 4)+1%>"></input>
+			</div>
+		</div>
+	</div>
+    <%if (lastPlayer) {%>
+	<div class="player-3">
+		<div class="pool">
+			<%_.map(lastPlayer.outCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%>">
+			<%});%>
+		</div>
+		<div class="hand">
+			<%_.map(lastPlayer.handCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_hide">
+			<%});%>
+			<%_.map(lastPlayer.upCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used">
+                <%});%>
+			<%});%>
+			<%_.map(lastPlayer.downCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+                <%});%>
+			<%});%>
+		</div>
+		<%if (lastPlayer.waitCard) {%>
+		<div class="wait">
+				<input type="button" data-value="<%=lastPlayer.waitCard.name%>" class="card card_<%=lastPlayer.waitCard.value%> card_hide">
+		</div>
+		<%}%>
+		<div class="flower">
+			<input type="button" class="op" value="花<%=lastPlayer.flourCards.length || ''%>">
+		</div>
+	</div>
+    <%}%>
+    <%if (facePlayer) {%>
+	<div class="player-2">
+		<div class="pool">
+			<%_.map(facePlayer.outCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%>">
+			<%});%>
+		</div>
+		<div class="hand">
+			<%_.map(facePlayer.handCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_hide">
+			<%});%>
+			<%_.map(facePlayer.upCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used">
+                <%});%>
+			<%});%>
+			<%_.map(facePlayer.downCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+                <%});%>
+			<%});%>
+		</div>
+		<%if (facePlayer.waitCard) {%>
+		<div class="wait">
+				<input type="button" data-value="<%=facePlayer.waitCard.name%>" class="card card_<%=facePlayer.waitCard.value%> card_hide">
+		</div>
+		<%}%>
+		<div class="flower">
+			<input type="button" class="op" value="花<%=facePlayer.flourCards.length || ''%>">
+		</div>
+	</div>
+    <%}%>
+    <%if (nextPlayer) {%>
+	<div class="player-1">
+		<div class="pool">
+			<%_.map(nextPlayer.outCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%>">
+			<%});%>
+		</div>
+		<div class="hand">
+			<%_.map(nextPlayer.handCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_hide">
+			<%});%>
+			<%_.map(nextPlayer.upCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used">
+                <%});%>
+			<%});%>
+			<%_.map(nextPlayer.downCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+                <%});%>
+			<%});%>
+		</div>
+		<%if (nextPlayer.waitCard) {%>
+		<div class="wait">
+				<input type="button" data-value="<%=nextPlayer.waitCard.name%>" class="card card_<%=nextPlayer.waitCard.value%> card_hide">
+		</div>
+		<%}%>
+		<div class="flower">
+			<input type="button" class="op" value="花<%=nextPlayer.flourCards.length || ''%>">
+		</div>
+	</div>
+    <%}%>
+	<div class="player-0">
+		<div class="pool">
+			<%_.map(selfPlayer.outCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%>">
+			<%});%>
+		</div>
+		<div class="ops">
+            <%if (gameInfo.curEvent.PlayerId == C.user_id) {%>
+			<%if (gameInfo.curEvent.Event != 7) {// 出牌不用操作按钮%>
+			<input type="button" data-op="<%=gameInfo.curEvent.Event%>" value="<%=C.op[gameInfo.curEvent.Event]%>" class="op op_<%=gameInfo.curEvent.Event%>">
+			<input type="button" data-op="12" value="<%=C.op[12]%>" class="op op_12">
+			<%}%>
+			<%}%>
+		</div>
+		<div class="hand">
+			<%_.map(selfPlayer.handCards, function(v,k) {%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%>">
+			<%});%>
+			<%_.map(selfPlayer.upCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used">
+                <%});%>
+			<%});%>
+			<%_.map(selfPlayer.downCardSet, function(cards) {%>
+                <%_.map(cards.cards, function(v,k){%>
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+                <%});%>
+			<%});%>
+		</div>
+		<%if (selfPlayer.waitCard) {%>
+		<div class="wait">
+				<input type="button" data-index="<%=selfPlayer.waitCard.index%>" data-value="<%=selfPlayer.waitCard.name%>" class="card card_<%=selfPlayer.waitCard.value%>">
+		</div>
+		<%}%>
+		<div class="flower">
+			<input type="button" class="op" value="花<%=selfPlayer.flourCards.length || ''%>">
+		</div>
+	</div>
+</div>
+

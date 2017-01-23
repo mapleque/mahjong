@@ -1,10 +1,10 @@
 package mahjong
 
 type WinInfo struct {
-	fans          []Fan
-	count         int
-	winPlayerId   string
-	losePlayerIds []string
+	Fans          []Fan    `json:"fans"`
+	Count         int      `json:"count"`
+	WinPlayerId   string   `json:"winPlayerId"`
+	LosePlayerIds []string `json:"losePlayerIds"`
 }
 
 type Fan struct {
