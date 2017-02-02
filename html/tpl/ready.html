@@ -1,0 +1,11 @@
+<h1>等待其他玩家加入</h1>
+<div class="center">
+    <div class="desk">
+        <%_.map(gameInfo.playerList, function(v,k){%>
+            <div class="desk-player"><%=k%></div>
+        <%})%>
+        <div class="desk-need"><%=gameInfo.maxPlayer%></div>
+    </div>
+    <input type="button" name="leave" value="退出">
+</div>
+
