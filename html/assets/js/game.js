@@ -32,7 +32,7 @@
 
     var loadGameList = function(data){
         console.log('load game list' , JSON.stringify(data));
-        U.tpl('game_list', data, function($root){
+        U.tpl('desk', data, function($root){
             // show not on desk
             // click to creat or join into
             $root.on('click', 'input[name=join]', function(){
@@ -48,7 +48,7 @@
     };
     var loadReadyView = function(data){
         console.log('load ready view' , JSON.stringify(data));
-        U.tpl('ready_view', data, function($root){
+        U.tpl('ready', data, function($root){
             // waiting for user ready
             $root.on('click', 'input[name=leave]', function(){
                 leave();
@@ -57,7 +57,8 @@
     };
     var loadNextView = function(data){
         console.log('load next view' , JSON.stringify(data));
-        U.tpl('next_view', data, function($root){
+        data.selfPlayer = data.gameInfo.playerList[C.user_id];
+        U.tpl('result', data, function($root){
             // waiting for user click next
             $root.on('click', 'input[name=next]', function(){
                 next();
@@ -86,7 +87,7 @@
                 }
             });
         }
-        U.tpl('playing_view', data, function($root){
+        U.tpl('playing', data, function($root){
             // update info to show
             // show op button
             var multi_sel = 0;
@@ -166,22 +167,23 @@
         }
     };
 
+    var checkGameStatusPid = 0;
     var checkGameStatus = function(){
         U.action('info', {
             success: function(res){
                 if (!res.gameInfo) {
+                    loadGameList(res);
                     setTimeout(function(){
-                        loadGameList(res);
                         checkGameStatus();
                     }, 1000);
                 } else if (res.gameInfo.setStatus == 1) {
+                    loadReadyView(res);
                     setTimeout(function(){
-                        loadReadyView(res);
                         checkGameStatus();
                     }, 1000);
                 } else if (res.gameInfo.setStatus == 3) {
+                    loadNextView(res);
                     setTimeout(function(){
-                        loadNextView(res);
                         checkGameStatus();
                     }, 1000);
                 } else if (res.gameInfo.curEvent.PlayerId == C.user_id) {
@@ -199,7 +201,7 @@
     var next = function(){
         U.action('next', {
             success:function(){
-                checkGameStatus();
+                //checkGameStatus();
             }
         });
     };
@@ -208,7 +210,7 @@
         if (confirm("放弃这场比赛?")) {
             U.action('leave', {
                 success:function(){
-                    checkGameStatus();
+                    //checkGameStatus();
                 }
             });
         }
@@ -218,7 +220,7 @@
         U.action('create', {
             success:function(res){
                 // waiting for status refresh
-                checkGameStatus();
+                //checkGameStatus();
             }
         });
     };
