@@ -45,6 +45,12 @@ func InitRouter(server *Server) {
 		Input: Checker{
 			"token": Rule("string", STATUS_INVALID_TOKEN, "user token")}},
 		nextFilter)
+	baseRouter.NewDocRouter(&Doc{
+		Path:        "leave",
+		Description: "leave a game",
+		Input: Checker{
+			"token": Rule("string", STATUS_INVALID_TOKEN, "user token")}},
+		leaveFilter)
 }
 
 func DefaultFilter(context *Context) bool {
@@ -128,6 +134,19 @@ func opFilter(context *Context) bool {
 	return fsm.Op(playerId, op, opIndexs)
 }
 func nextFilter(context *Context) bool {
+	playerId := getPlayerId(context)
+	fsmId, ok := gameMap[playerId]
+	if !ok {
+		return false
+	}
+	fsm, ok := gameList[fsmId]
+	if !ok {
+		return false
+	}
+	fsm.Next()
+	return true
+}
+func leaveFilter(context *Context) bool {
 	playerId := getPlayerId(context)
 	fsmId, ok := gameMap[playerId]
 	if !ok {

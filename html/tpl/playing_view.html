@@ -7,9 +7,9 @@
 			</div>
 		</div>
 		<div class="card-pool">
-			<i>牌墙</i>
+			<i>剩余</i>
 			<div>
-				<input type="button" name="restart" class="card card_hide" value="剩余：<%=gameInfo.cardPool.length%>"></input>
+				<input type="button" name="leave" class="card card_hide" value="<%=gameInfo.cardPool.length%>"></input>
 			</div>
 		</div>
 		<div class="set-seq">
@@ -37,7 +37,7 @@
 			<%});%>
 			<%_.map(lastPlayer.downCardSet, function(cards) {%>
                 <%_.map(cards.cards, function(v,k){%>
-				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?'card_hide':''%>">
                 <%});%>
 			<%});%>
 		</div>
@@ -69,7 +69,7 @@
 			<%});%>
 			<%_.map(facePlayer.downCardSet, function(cards) {%>
                 <%_.map(cards.cards, function(v,k){%>
-				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?'card_hide':''%>">
                 <%});%>
 			<%});%>
 		</div>
@@ -101,7 +101,7 @@
 			<%});%>
 			<%_.map(nextPlayer.downCardSet, function(cards) {%>
                 <%_.map(cards.cards, function(v,k){%>
-				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?'card_hide':''%>">
                 <%});%>
 			<%});%>
 		</div>
@@ -140,7 +140,7 @@
 			<%});%>
 			<%_.map(selfPlayer.downCardSet, function(cards) {%>
                 <%_.map(cards.cards, function(v,k){%>
-				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?card_hide:''%>">
+				<input type="button" data-index="<%=v.index%>" data-value="<%=v.name%>" class="card card_<%=v.value%> card_used <%=k?'card_hide':''%>">
                 <%});%>
 			<%});%>
 		</div>

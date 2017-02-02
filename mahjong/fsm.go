@@ -100,6 +100,15 @@ func (fsm *FSM) Op(playerId string, op int, indexs []int) bool {
 }
 
 func (fsm *FSM) Next() {
+	for playerId, _ := range fsm.PlayerList {
+		fsm.PlayerList[playerId] = &Player{
+			HandCards:   []*Card{},
+			UpCardSet:   []*CardSet{},
+			DownCardSet: []*CardSet{},
+			OutCards:    []*Card{},
+			FlourCards:  []*Card{},
+			DoIndex:     &[]int{}}
+	}
 	fsm.process()
 }
 

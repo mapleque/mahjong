@@ -50,6 +50,9 @@
         console.log('load ready view' , JSON.stringify(data));
         U.tpl('ready_view', data, function($root){
             // waiting for user ready
+            $root.on('click', 'input[name=leave]', function(){
+                leave();
+            });
         });
     };
     var loadNextView = function(data){
@@ -130,8 +133,8 @@
                         return;
                 }
             });
-            $root.on('click', 'input[name=restart]', function(){
-                restart();
+            $root.on('click', 'input[name=leave]', function(){
+                leave();
             });
         });
     };
@@ -201,9 +204,9 @@
         });
     };
 
-    var restart= function(){
+    var leave= function(){
         if (confirm("放弃这场比赛?")) {
-            U.action('restart', {
+            U.action('leave', {
                 success:function(){
                     checkGameStatus();
                 }
