@@ -42,7 +42,7 @@ var FanList = []Fan{
 		Count:   88,
 		without: []int{},
 		check: func(fsm *FSM, playerId string) bool {
-			return false
+			return true
 		}},
 	Fan{
 		Index:   2,

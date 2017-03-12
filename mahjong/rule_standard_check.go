@@ -115,3 +115,6 @@ func (rule *StandardRule) isShun(card1, card2, card3 *Card) bool {
 func (rule *StandardRule) isDui(card1, card2 *Card) bool {
 	return card1.Value == card2.Value
 }
+func (rule *StandardRule) isHu(fsm *FSM) bool {
+	return true
+}

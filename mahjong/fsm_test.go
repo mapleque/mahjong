@@ -66,7 +66,7 @@ func Test2Player(t *testing.T) {
 	fsm.Join("2")
 	logFsm(t, fsm)
 	logPlayers(t, fsm)
-	for i := 0; i < 200; i++ {
+	for i := 0; i < 10000; i++ {
 		curPlayer := fsm.CurEvent.PlayerId
 		if fsm.CurEvent.Event != 7 {
 			t.Log("player", curPlayer, "do", 12)
@@ -92,7 +92,7 @@ func Test4Player(t *testing.T) {
 	fsm.Join("4")
 	logFsm(t, fsm)
 	logPlayers(t, fsm)
-	for i := 0; i < 200; i++ {
+	for i := 0; i < 10000; i++ {
 		curPlayer := fsm.CurEvent.PlayerId
 		if fsm.CurEvent.Event != 7 {
 			t.Log("player", curPlayer, "do", 12)

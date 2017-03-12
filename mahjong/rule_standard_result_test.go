@@ -98,50 +98,75 @@ import (
 // 80、自摸：自己抓进牌成和牌。
 // 81、花牌：即春夏秋冬，梅兰竹菊，每花计一分。不计在起和分内，和牌后才能计分。花牌补花成和计自摸分，不计杠上开花。
 
-type TestCase struct {
-	name string
-	rule *StandardRule
-	fsm  *FSM
-	run  func() bool
+type TestCaseRunner struct {
+	fans  string
+	count int
+	rule  *StandardRule
+	fsm   *FSM
+	run   func() bool
 }
 
-func initTestCase() *TestCase {
+type TestCase struct {
+	name string
+	exp  int
+
+	round     int
+	hand      []int
+	selfWait  int
+	upSet     [][]int
+	downSet   [][]int
+	flour     []int
+	pool      []int
+	out       []int
+	otherWait int
+}
+
+var cases = []*TestCase{
+	&TestCase{
+		name:     "test",
+		exp:      100,
+		round:    1,
+		hand:     []int{161, 162, 163, 164, 165, 166, 167, 168},
+		selfWait: 161,
+		upSet:    [][]int{{161, 162, 163}, {164, 165, 166, 167}},
+		downSet:  [][]int{{161, 162, 163, 164}, {165, 166, 167, 168}},
+		flour:    []int{161, 162, 163, 164, 165, 166, 167, 168}},
+	&TestCase{
+		name:     "大三元",
+		exp:      88,
+		hand:     []int{125, 125, 125, 126, 126, 126, 127, 127, 127, 1, 2, 3, 4},
+		selfWait: 11}}
+
+func initTestCase(ts *TestCase) *TestCaseRunner {
 	fsm := &FSM{
 		PlayerList: make(map[string]*Player)}
-	c := &TestCase{
+	r := &TestCaseRunner{
 		rule: &StandardRule{},
 		fsm:  fsm}
 	player := &Player{}
 	fsm.PlayerList["1"] = player
-	return c
-}
-func TestAll(t *testing.T) {
-	cases := []*TestCase{}
-	var testCase *TestCase
-
-	testCase = initTestCase()
-	testCase.fsm.PlayerList["1"].HandCards = []*Card{
-		createCard(161),
-		createCard(162),
-		createCard(163),
-		createCard(164),
-		createCard(165),
-		createCard(166),
-		createCard(167),
-		createCard(168)}
-	testCase.run = func() bool {
-		fans := testCase.rule.processFanList(testCase.fsm, "1")
-		for _, fan := range fans {
-			testCase.name += fan.Name + "|"
-		}
-		count := testCase.rule.sumFanCount(fans)
-		return count == 100
+	player.HandCards = []*Card{}
+	for _, index := range ts.hand {
+		player.HandCards = append(player.HandCards, createCard(index))
 	}
-	cases = append(cases, testCase)
+	r.run = func() bool {
+		fans := r.rule.processFanList(r.fsm, "1")
+		for _, fan := range fans {
+			r.fans += fan.Name + ":" + "|"
+		}
+		count := r.rule.sumFanCount(fans)
+		r.count = count
+		return count == ts.exp
+	}
+	return r
+}
 
+func TestAll(t *testing.T) {
 	for _, c := range cases {
-		if !c.run() {
-			t.Error("check faild", c.name)
+		r := initTestCase(c)
+		if !r.run() {
+			t.Error("check faild", c.name, c.exp,
+				"result is", r.count, "fan list is", r.fans)
 		}
 	}
 }

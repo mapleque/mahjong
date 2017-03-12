@@ -4,6 +4,9 @@ import (
 	"testing"
 )
 
+func TestIsHu(t *testing.T) {
+}
+
 func TestIsGang(t *testing.T) {
 	rule := &StandardRule{}
 	if !rule.isGang(
