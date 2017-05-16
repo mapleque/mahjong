@@ -1,4 +1,6 @@
 # go mahjong
+[![Build Status](https://travis-ci.org/mapleque/go_mahjong.png)](https://travis-ci.org/mapleque/go_mahjong)
+
 ## UI
 ```
 ----> login.html <----> register.html
