@@ -1,0 +1,8 @@
+language: go
+go:
+    - 1.6
+go_import_path:
+install:
+    - go get -v github.com/go-sql-driver/mysql
+script:
+    - go test -v ./mahjong/*.go
